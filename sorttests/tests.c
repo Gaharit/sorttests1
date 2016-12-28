@@ -8,17 +8,19 @@
 #define COLOR_DEFAULT 15
 
 //Ётот вспомогательный метод может быть полезным ... 
-void print_test_result(HANDLE hConsole, char* test_name, int correct)
+void print_test_result(char* test_name, int correct)
 {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, correct ? COLOR_GREEN : COLOR_RED);
 	printf("%s: %s\n", test_name, correct ? "SUCCESS" : "FAIL");
 	SetConsoleTextAttribute(hConsole, COLOR_DEFAULT);
 }
 
 // ... и этот тоже
-void print_test_diff(HANDLE hConsole, int* expected, int* actual, int length)
+void print_test_diff(int* expected, int* actual, int length)
 {
 	int i;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	printf("Expected: ");
 	for (i = 0; i < length; i++)
 		printf("%d\t", expected[i]);
@@ -39,8 +41,7 @@ void test_null(void(*fin)(int*, int))
 
 	fin(mass, 0);
 
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	print_test_result(hStdOut, "test_null", 1);    //(mass == NULL) ? printf("Success\n") : printf("Fail\n");
+	print_test_result("test_null", 1);    //(mass == NULL) ? printf("Success\n") : printf("Fail\n");
 }
 
 void test_one_element(void(*fin)(int*, int))
@@ -53,9 +54,9 @@ void test_one_element(void(*fin)(int*, int))
 
 	fin(mass, N);
 
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	(mass[0] == sorted_mass[0]) ? print_test_result(hStdOut, "test_one_element", 1) : print_test_result(hStdOut, "test_one_element", 0);
-	print_test_diff(hStdOut, sorted_mass, mass, N);
+	
+	(mass[0] == sorted_mass[0]) ? print_test_result("test_one_element", 1) : print_test_result("test_one_element", 0);
+	print_test_diff(sorted_mass, mass, N);
 }
 
 void test_two_elements(void(*fin)(int*, int))
@@ -67,9 +68,8 @@ void test_two_elements(void(*fin)(int*, int))
 
 	fin(mass, N);
 
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	print_test_result(hStdOut, "test_two_elements", 1);
-	print_test_diff(hStdOut, sorted_mass, mass, N);
+	print_test_result("test_two_elements", 1);
+	print_test_diff(sorted_mass, mass, N);
 }
 
 void test_common_even(void(*fin)(int*, int))
@@ -80,9 +80,9 @@ void test_common_even(void(*fin)(int*, int))
 
 	fin(mass, N);
 
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	print_test_result(hStdOut, "test_common_even", 1);
-	print_test_diff(hStdOut, sorted_mass, mass, N);
+
+	print_test_result("test_common_even", 1);
+	print_test_diff(sorted_mass, mass, N);
 	//«десь напишите тест дл€ случа€ когда массив произвольной чЄтной длины
 }
 
@@ -94,9 +94,8 @@ void test_common_odd(void(*fin)(int*, int))
 
 	fin(mass, N);
 
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	print_test_result(hStdOut, "test_common_odd", 1);
-	print_test_diff(hStdOut, sorted_mass, mass, N);
+	print_test_result("test_common_odd", 1);
+	print_test_diff(sorted_mass, mass, N);
 	//«десь напишите тест дл€ случа€ когда массив произвольной нечЄтной длины
 }
 
@@ -135,7 +134,7 @@ void test_speed(void(*fin)(int*, int), int mode)
 		}
 	}
 	//ћожете изменить формат вывода результатов
-	printf("Elapsed time: %lf\n", ((double)(finish - start)) / CLOCKS_PER_SEC);
+	printf("Elapsed time: %lf\n", ((double)(finish - start) / CLOCKS_PER_SEC));
 }
 
 void test_sort(void(*fin)(int*, int))
@@ -150,3 +149,4 @@ void test_sort(void(*fin)(int*, int))
 	test_speed(fin, 2);
 	test_speed(fin, 3);
 }
+
